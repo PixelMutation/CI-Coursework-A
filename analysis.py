@@ -142,7 +142,7 @@ def analyse_best_network(best_result, fashion_map, save_path):
 
 def train_and_test_net(hidden_nodes, lr, epochs, batch_size, training_dataset, testing_dataset):
     net = NeuralNetwork(input_nodes=784, hidden_nodes=hidden_nodes, output_nodes=10, learning_rate=lr)
-    # Store training params in net object for later reference
+    # store training params in net object for later reference
     net.epochs = epochs
     net.batch_size = batch_size
     
@@ -219,7 +219,6 @@ if __name__ == "__main__":
         for fraction in dataset_fractions_to_test:
             print(f"\n Running with dataset fraction: {fraction*100:.0f}% ")
             training_data = full_training_dataset[:int(len(full_training_dataset) * fraction)]
-            # Note: This experiment runs sequentially as it modifies the dataset for each run
             results.append(train_and_test_net(FIXED_HIDDEN_NODES, FIXED_LEARNING_RATE, FIXED_EPOCHS, FIXED_BATCH_SIZE, training_data, testing_dataset))
         
         # Manual plotting and analysis for this sequential experiment
@@ -252,7 +251,7 @@ if __name__ == "__main__":
             learning_rate=FIXED_LEARNING_RATE
         )
         
-        # --- CHANGE 1: Create lists for both training and validation performance ---
+        
         training_performance_over_time = []
         validation_performance_over_time = []
         epoch_numbers = list(range(1, max(epochs_to_test) + 1))
@@ -268,7 +267,7 @@ if __name__ == "__main__":
             mnist_train(net, full_training_dataset, epochs=1, batch_size=FIXED_BATCH_SIZE)
             net.epochs = epoch
             net.batch_size = FIXED_BATCH_SIZE
-            # --- CHANGE 2: Test performance on BOTH datasets ---
+            
             print("  Testing on validation set...")
             validation_performance, incorrect_records = mnist_test(net, testing_dataset)
             validation_performance_over_time.append(validation_performance)
@@ -277,7 +276,7 @@ if __name__ == "__main__":
             training_performance, _ = mnist_test(net, full_training_dataset)
             training_performance_over_time.append(training_performance)
             
-            # The "best" network is determined by its performance on the unseen validation data
+            
             if validation_performance > best_validation_performance:
                 print(f"  New best VALIDATION performance found: {validation_performance:.2f}% (at epoch {epoch})")
                 best_validation_performance = validation_performance
@@ -285,7 +284,7 @@ if __name__ == "__main__":
                 best_net_state = copy.deepcopy(net)
                 best_result_tuple = (best_net_state, validation_performance, incorrect_records)
 
-        # --- CHANGE 3: Plot both lines on the same graph ---
+        
         plt.figure(figsize=(10, 6))
         plt.plot(epoch_numbers, training_performance_over_time, marker='o', linestyle='--', label='Training Performance')
         plt.plot(epoch_numbers, validation_performance_over_time, marker='o', linestyle='--', label='Validation Performance')
@@ -294,12 +293,12 @@ if __name__ == "__main__":
         plt.ylabel('Performance (%)')
         plt.grid(True)
         # plt.xticks(epoch_numbers)
-        plt.legend() # Add a legend to identify the lines
+        plt.legend() 
         plt.savefig(os.path.join(save_path, 'train_vs_validation_performance.png'))
         print(f"\nSaved epoch progression plot to {save_path}")
         # plt.close()
 
-        # Analyze and save the network that had the best VALIDATION performance
+        # analyze and save the network that had the best performance
         if best_result_tuple:
             analyse_best_network(best_result_tuple, fashion_map, save_path)
         

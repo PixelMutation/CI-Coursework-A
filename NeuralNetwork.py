@@ -27,7 +27,7 @@ class NeuralNetwork:
 
     # Internal function to run the ANN, including intermediate outputs
     def _forward(self,inputs_array):
-        # Calculate signals into hidden layer by finding 
+        # Calculate signals into hidden layer by finding dot product
         hidden_inputs = np.dot(self.wih, inputs_array)
         # Calculate output from the hidden layer
         hidden_outputs = self.activation_function(hidden_inputs)
@@ -57,20 +57,16 @@ class NeuralNetwork:
         return output_errors
     
     def train_batch(self, inputs_list, targets_list):
-        # inputs_list is now a batch of inputs (e.g., 784 x 64)
-        # targets_list is now a batch of targets (e.g., 10 x 64)
         inputs_array = np.array(inputs_list, ndmin=2,dtype=floattype).T
         targets_array = np.array(targets_list, ndmin=2,dtype=floattype).T
         
-        # Forward pass remains the same, as np.dot handles broadcasting
         hidden_outputs, final_outputs = self._forward(inputs_array)
         
         # Calculate error
         output_errors = targets_array - final_outputs
         hidden_errors = np.dot(self.who.T, output_errors)
         
-        # Update weights - this is the key change
-        # The update is the average gradient over the batch
+        # Update weights, averaged across the targets
         self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)),
                                     np.transpose(hidden_outputs)) / inputs_array.shape[1]
         self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)),
