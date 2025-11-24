@@ -3,3 +3,6 @@ old*
 SavedNetworks
 Tests/*
 *.pdf
+
+*test.csv
+*train.csv
